@@ -19,8 +19,14 @@ public class searchGUI extends JPanel implements ActionListener {
     private String responseString, requestString;
     searchResult[] resultArray = new searchResult[50];
     fullSearchResponse responseObj;
+    Main parentClass;
+    TimeClient timer;
 
-    public searchGUI(){
+    public searchGUI(Main parent){
+        // Objects needed for search timestamp
+        this.parentClass = parent;
+        this.timer = new TimeClient();
+        
         this.setLayout(new GridBagLayout());
         this.setBorder(LineBorder.createBlackLineBorder());
         populateSearchBar();
@@ -34,7 +40,7 @@ public class searchGUI extends JPanel implements ActionListener {
     private void populateSearchBar(){
         searchLabel = new JLabel();
         searchLabel.setText("Search::");
-
+        
         searchBar = new JTextField();
         searchBar.setPreferredSize(new Dimension(350, 30));
 
@@ -55,7 +61,7 @@ public class searchGUI extends JPanel implements ActionListener {
         c.ipady=0;
         c.weightx = 1;
         c.weighty = 0;
-
+        
         this.add(searchLabel, c);
 
         c.gridx = 1;
@@ -74,6 +80,7 @@ public class searchGUI extends JPanel implements ActionListener {
             System.out.println("Search Button pressed!!!!");
             try{
                 masterSearch(searchString);
+                parentClass.timeStamp.setText("Last Search:: " + timer.getTime());
             }
             catch (Exception e){
                 e.printStackTrace();
