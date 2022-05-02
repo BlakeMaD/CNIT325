@@ -1,13 +1,13 @@
 import com.google.gson.*;
-
-import javax.imageio.ImageIO;
+import net.miginfocom.swing.MigLayout;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BufferedImage;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.*;
-import java.net.URL;
 
-public class detailGUI extends JPanel {
+
+public class detailGUI extends JPanel{
     public movieDetails details;
     String requestString;
     String responseString;
@@ -20,9 +20,10 @@ public class detailGUI extends JPanel {
         requestString = "https://imdb-api.com/en/API/Title/k_89q53wtm/" + id.strip();
         requestString = requestString.replaceAll(" ", "%20");
         System.out.println("API Request:: " + requestString);
+        this.setMaximumSize(new Dimension(700,700));
 
         try{
-            responseString = stringFromURL(requestString);
+            responseString = essentialFunctions.stringFromURL(requestString);
             System.out.println("API Response:: " + responseString);
             stringToObject(responseString);
             System.out.println("movieDetails object created");
@@ -30,7 +31,34 @@ public class detailGUI extends JPanel {
         catch (Exception e){
             e.printStackTrace();
         }
-        this.add(new JLabel("Hello"));
+
+        JButton haveWatched = new JButton("I have watched this");
+        haveWatched.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                listitem itemToAdd = new listitem();
+                itemToAdd.description = details.year;
+                itemToAdd.id = details.id;
+                itemToAdd.image = details.image;
+                itemToAdd.title = details.title;
+                System.out.println("Id:" + itemToAdd.id);
+                Main.masterList.addToList(itemToAdd);
+                Main.masterList.writeToFile();
+                Main.myListPanel.populateMyListGUI();
+            }
+        });
+
+        this.setLayout(new MigLayout());
+        this.add(new JLabel(essentialFunctions.getImgFromURL(details.image, 200, 400)), "span 2 2");
+        this.add(new JLabel("Title: " + details.title), "wrap");
+        this.add(new JLabel("IMDb Rating: " + details.imDbRating), "wrap");
+        this.add(new JLabel("Description: " + details.plot), "wrap");
+        this.add(new JLabel("Cast: " + details.fullCast), "wrap");
+        this.add(new JLabel("Director: " + details.directors), "wrap");
+        this.add(new JLabel("Run Time:" + details.runtimeMins), "wrap");
+        this.add(new JLabel("Awards: " + details.awards), "wrap");
+        this.add(new JLabel("Trailer Link: " + details.trailer), "wrap");
+        this.add(haveWatched, "wrap");
 
     }
 
@@ -39,58 +67,7 @@ public class detailGUI extends JPanel {
         Gson gson = new Gson();
         details = gson.fromJson(raw,movieDetails.class);
 
-       // System.out.println("The title: " + details.title);
-
-        try (Writer writer = new FileWriter("Output.json")) {
-            Gson ggson = new GsonBuilder().create();
-            ggson.toJson(details, writer);
-        }
     }
 
 
-
-    /*
-        1-performs GET request to the indicated URL.
-        2-returns the response as a raw,unparsed string
-     */
-    private String stringFromURL(String urlString) throws Exception {
-        BufferedReader reader = null;
-        try {
-            URL url = new URL(urlString);
-            reader = new BufferedReader(new InputStreamReader(url.openStream()));
-            StringBuffer buffer = new StringBuffer();
-            int read;
-            char[] chars = new char[1024];
-            while ((read = reader.read(chars)) != -1)
-                buffer.append(chars, 0, read);
-
-            return buffer.toString();
-        } finally {
-            if (reader != null)
-                reader.close();
-        }
-    }
-
-    private ImageIcon getImgFromURL(String stringURL){
-
-        BufferedImage img;
-        Image resized;
-        ImageIcon posterIcon = null;
-
-
-        try {
-            URL url = new URL(stringURL);
-            img = ImageIO.read(url);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return posterIcon;
-        }
-
-        resized = img.getScaledInstance(200, 400, Image.SCALE_SMOOTH);
-
-
-        posterIcon = new ImageIcon(resized);
-        return posterIcon;
-
-    }
 }

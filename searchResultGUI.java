@@ -19,6 +19,7 @@ public class searchResultGUI extends JPanel implements ActionListener {
     public String description = "";
     public JLabel posterLabel;
     public JButton titleButton;
+    public Main parentClass;
 
 
     public searchResultGUI(String imageURL, String Title, String id){
@@ -29,7 +30,7 @@ public class searchResultGUI extends JPanel implements ActionListener {
         this.setBackground(Color.WHITE);
 
         posterLabel = new JLabel();
-        posterLabel.setIcon(getImgFromURL(imageURL));
+        posterLabel.setIcon(essentialFunctions.getImgFromURL(imageURL, 133, 200));
         posterLabel.setBorder(LineBorder.createBlackLineBorder());
         posterLabel.setPreferredSize(new Dimension(133,200));
 
@@ -97,7 +98,10 @@ public class searchResultGUI extends JPanel implements ActionListener {
             popUp.setSize(700,700);
             System.out.println(this.id);
             detailGUI testPanel = new detailGUI(this.id);
-            popUp.add(testPanel);
+            JScrollPane scrollPaneDetails = new JScrollPane(testPanel, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+            scrollPaneDetails.setPreferredSize(new Dimension(700,700));
+            scrollPaneDetails.getVerticalScrollBar().setUnitIncrement(10);
+            popUp.add(scrollPaneDetails);
             popUp.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
             popUp.setVisible(true);
             popUp.setLocationRelativeTo(null);
@@ -105,26 +109,4 @@ public class searchResultGUI extends JPanel implements ActionListener {
         }
     }
 
-    private ImageIcon getImgFromURL(String stringURL){
-
-        BufferedImage img;
-        Image resized;
-        ImageIcon posterIcon = null;
-
-
-        try {
-            URL url = new URL(stringURL);
-            img = ImageIO.read(url);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return posterIcon;
-        }
-
-        resized = img.getScaledInstance(133, 200, Image.SCALE_SMOOTH);
-
-
-        posterIcon = new ImageIcon(resized);
-        return posterIcon;
-
-    }
 }

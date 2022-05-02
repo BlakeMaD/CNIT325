@@ -33,9 +33,4 @@ public class TimeClient {
         return timeValue;
     } //end public
 
-    public static void main(String[] args) {
-        TimeClient t = new TimeClient();
-        System.out.println(t.getTime());
-    }
 } //end class
-

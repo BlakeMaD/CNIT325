@@ -1,4 +1,3 @@
-public class writer {
-    public String id;
+public class writer extends person{
     public String name;
 }

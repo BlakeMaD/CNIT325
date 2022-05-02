@@ -7,11 +7,12 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.*;
+import java.util.ResourceBundle;
 
 import com.google.gson.*;
 
 
-public class searchGUI extends JPanel implements ActionListener {
+public class searchGUI extends JPanel implements ActionListener, essentialFunctions {
 
     JLabel searchLabel;
     JButton searchButton;
@@ -21,12 +22,12 @@ public class searchGUI extends JPanel implements ActionListener {
     fullSearchResponse responseObj;
     Main parentClass;
     TimeClient timer;
+    ResourceBundle bundle;
 
-    public searchGUI(Main parent){
-        // Objects needed for search timestamp
+    public searchGUI(Main parent, ResourceBundle bundle){
         this.parentClass = parent;
+        this.bundle = bundle;
         this.timer = new TimeClient();
-        
         this.setLayout(new GridBagLayout());
         this.setBorder(LineBorder.createBlackLineBorder());
         populateSearchBar();
@@ -39,12 +40,12 @@ public class searchGUI extends JPanel implements ActionListener {
 
     private void populateSearchBar(){
         searchLabel = new JLabel();
-        searchLabel.setText("Search::");
-        
+        searchLabel.setText(bundle.getString("Search") + "::");
+
         searchBar = new JTextField();
         searchBar.setPreferredSize(new Dimension(350, 30));
 
-        searchButton = new JButton("Search");
+        searchButton = new JButton(bundle.getString("Search"));
         searchButton.setPreferredSize(new Dimension(80,20));
         searchButton.addActionListener(this);
 
@@ -61,7 +62,7 @@ public class searchGUI extends JPanel implements ActionListener {
         c.ipady=0;
         c.weightx = 1;
         c.weighty = 0;
-        
+
         this.add(searchLabel, c);
 
         c.gridx = 1;
@@ -100,7 +101,7 @@ public class searchGUI extends JPanel implements ActionListener {
         requestString = requestString.replaceAll(" ", "%20");
         clearSearchResults();
         System.out.println("API Request:: " + requestString);
-        responseString = stringFromURL(requestString);
+        responseString = essentialFunctions.stringFromURL(requestString);
         System.out.println("API Request:: " + responseString);
         stringToObject(responseString);
         if(responseObj.results == null){
@@ -130,10 +131,10 @@ public class searchGUI extends JPanel implements ActionListener {
     }
 
     //parses json string to appropriate objects
-    public void stringToObject(String raw) throws Exception{
+    public void stringToObject(String rawString) throws Exception{
         Gson gson = new Gson();
         responseObj = null;
-        responseObj = gson.fromJson(raw,fullSearchResponse.class);
+        responseObj = gson.fromJson(rawString,fullSearchResponse.class);
     }
 
     /*
